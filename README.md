@@ -45,11 +45,11 @@ To run the model:
 
 ```
 cd path/to/miRBind/directory
-chmod +x penguinn.py
+chmod +x mirbind.py
 #if you are not actively sourcing from the previously created virtualenv:
 source venv/bin/activate
 #run the prediction
-./mirbind.py --input <input_fasta_file> --output <output_file> --model <path_to_model.h5>
+./mirbind.py --input <input_file> --output <output_file> --model <path_to_model.h5>
 ```
 
 ### Web application
