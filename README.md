@@ -5,11 +5,12 @@ miRBind is a machine learning method based on CNN (Convolutional Neural Network)
 ## Installation
 
 Using Git:
-
+```
 git clone https://github.com/ML-Bioinfo-CEITEC/miRBind.git, or
-
+```
+```
 git clone git@gitlab.com:RBP_Bioinformatics/miRBind.git
-
+```
 
 ### Prerequisities
 
