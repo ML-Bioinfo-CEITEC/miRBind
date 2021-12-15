@@ -14,7 +14,7 @@ git clone git@gitlab.com:RBP_Bioinformatics/miRBind.git
 
 ### Prerequisites
 
-Penguinn is implemented in python using Keras and Tensorflow backend.
+mRBind is implemented in python using Keras and Tensorflow backend.
 
 Required:
 
