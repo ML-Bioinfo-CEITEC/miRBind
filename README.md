@@ -12,7 +12,7 @@ git clone https://github.com/ML-Bioinfo-CEITEC/miRBind.git
 git clone git@gitlab.com:RBP_Bioinformatics/miRBind.git
 ```
 
-### Prerequisities
+### Prerequisites
 
 Penguinn is implemented in python using Keras and Tensorflow backend.
 
