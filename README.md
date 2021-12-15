@@ -44,7 +44,7 @@ The default model is trained on human Ago1 CLASH dataset with ratio 1:1 of posit
 To run the model:
 
 ```
-#cd path/to/miRBind/directory
+cd path/to/miRBind/directory
 chmod +x penguinn.py
 #if you are not actively sourcing from the previously created virtualenv:
 source venv/bin/activate
