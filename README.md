@@ -6,7 +6,7 @@ miRBind is a machine learning method based on CNN (Convolutional Neural Network)
 
 Using Git:
 ```
-git clone https://github.com/ML-Bioinfo-CEITEC/miRBind.git, or
+git clone https://github.com/ML-Bioinfo-CEITEC/miRBind.git
 ```
 ```
 git clone git@gitlab.com:RBP_Bioinformatics/miRBind.git
@@ -27,27 +27,30 @@ Required:
     
 ### Installing
 
-(1) create a virtual environment:
+```
+#create a virtual environment:
 
 python -m venv venv
 
-(2) activate it and install the necessary libraries.
+#activate it and install the necessary libraries.
 
 source venv/bin/activate
 pip install -r requirements.txt
-
+```
 
 ### Prediction
 
 The default model is trained on human Ago1 CLASH dataset with ratio 1:1 of positive:negative samples.
 To run the model:
 
-1) cd path/to/miRBind/directory
-2) chmod +x penguinn.py
-   #if you are not actively sourcing from the previously created virtualenv:
-   source venv/bin/activate
-3) #run the prediction
-   ./mirbind.py --input <input_fasta_file> --output <output_file> --model <path_to_model.h5>
+```
+#cd path/to/miRBind/directory
+chmod +x penguinn.py
+#if you are not actively sourcing from the previously created virtualenv:
+source venv/bin/activate
+#run the prediction
+./mirbind.py --input <input_fasta_file> --output <output_file> --model <path_to_model.h5>
+```
 
 ### Web application
 
