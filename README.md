@@ -54,7 +54,7 @@ source venv/bin/activate
 
 ### Web application
 
-....
+The user-friendly miRBind web application for performing predictions https://ml-bioinfo-ceitec.github.io/miRBind/
 
 ### Contact information
 
