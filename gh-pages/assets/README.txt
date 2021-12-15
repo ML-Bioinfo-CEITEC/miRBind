@@ -1,1 +1,0 @@
-The converted "model_default_CLASH2013_paper.h5" along with the weight files. To be uploaded to the branch "gh-pages" of the miRBind GitHub repository.
