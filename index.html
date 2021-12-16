@@ -88,7 +88,12 @@ h1 {
 .bar .bar-button:active {
   background-color: #4682B4;
   box-shadow: 0 5px #666;
-}   
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+   
 </style>
 
 
@@ -146,21 +151,16 @@ h1 {
     <div id="multiple" class="bar tab" style="display:none">
       <FORM method="post" enctype="multipart/form-data"><br />
         <h4><strong>Multiple miRNA-target pairs</strong></h4>
-      <LABEL class="radio-inline">
-        <INPUT type="radio" name="optradio" id="fasta" required>Line separated
-        </LABEL>
-      <LABEL class="radio-inline">
-        <INPUT type="radio" name="optradio" id="multiline">Multi-FASTA
-        </LABEL>
+      <!--LABEL class="radio-inline"><INPUT type="radio" name="optradio" id="multiline" required>Line separated</LABEL><LABEL class="radio-inline"><INPUT type="radio" name="optradio" id="fasta">Multi-FASTA</LABEL>-->
         <BR /><BR />
-        <p>Insert miRNA (20 nt) sequences here</p>
+        <p>Insert miRNA (20 nt) sequences here (line separated)</p>
 
         <DIV><textarea name="text21" id="text21" style="width:70%;height:100px;" pattern="[A-Za-z]{20}" placeholder="Paste mRNA sequences" required></textarea></DIV>
         <BR />
-        <p>Insert target mRNA sequences (50 nt) here</p>
+        <p>Insert target mRNA sequences (50 nt) here (line separated)</p>
         <DIV><textarea name="text22" id="text22" style="width:70%;height:100px;" pattern="[A-Za-z]{50}" placeholder="Paste mRNA sequences" required></textarea></DIV><BR />
 
-        <input type="reset" value="Reset" name="reset"><button type="button" value="Submit" name="submit" onclick="makePrediction2()">Submit</button>
+        <button type="button" value="Load example" name="example2" onclick="loadExample2()">Load example</button><input type="reset" value="Reset" name="reset"><button type="button" value="Submit" name="submit" onclick="makePrediction2()">Submit</button>
 		<br/><br/>
 		<DIV class="prob" , id="prob3"></DIV><br/>
       </FORM>
@@ -169,16 +169,15 @@ h1 {
 <script>
 function validateSequence(sequence, minSize, maxSize) {
   if (sequence.length > maxSize) {
-    return 'The sequence is too long. The sequence needs to be equal to '.concat(maxSize, '.');
+    return ' is too long; it needs to be equal to '.concat(maxSize, ' nt.');
   } else if (sequence.length < minSize) {
-    return 'The sequence is too short. The sequence needs to be equal to '.concat(minSize, '.');
+    return ' is too short; it needs to be equal to '.concat(minSize, ' nt.');
   } else if ('' != sequence.replace(/A/g, '').replace(/T/g, '').replace(/C/g, '').replace(/G/g, '').replace(/N/g, '')) {
     return 'The sequence must consist only of "A", "C", "T", "G".';
   } else {
     return '';
   }
 }
-
 
 function formatOutput(sequence, results, error = 0, seq_name = '', output_type = 'text') {
   if (output_type == 'text') {
@@ -205,186 +204,6 @@ function simpleSeq(x) {
     seq: x
   };
 }
-
-async function makePrediction3() {
-  document.getElementById('prob3').innerHTML = "loaded";
-  // load model
-  var model = undefined;
-  modelUrl = "https://raw.githubusercontent.com/Ilektra-Giassa/miRBind01/gh-pages/assets/model.json";
-  model = await tf.loadLayersModel(modelUrl);
-  console.log("model loaded...");
-  document.write("loaded");
-  //document.getElementById('prob2').innerHTML = "loaded";
-  var txt21 = document.getElementById('text21').value;
-  var txt22 = document.getElementById('text22').value;
-  document.write(txt21);
-  var seqArray21 = [];
-  var seqArray22 = [];
-
-  if (document.getElementById('fasta').checked) {
-    var fasta = require("biojs-io-fasta");
-    seqArray21 = fasta.parse(txt21);
-    document.write(seqArray21[0]);
-    seqArray22 = fasta.parse(txt22);
-  }
-  if (document.getElementById('multiline').checked) {
-    seqArray21 = txt21.split(/\r?\n/).map(simpleSeq);
-    seqArray22 = txt22.split(/\r?\n/).map(simpleSeq);
-  }
-
-  for (var i = 0; i < seqArray21.length; i++) {
-
-    var s21 = seqArray21[i].seq.toUpperCase();
-
-    // check the sequence format
-    const validation21 = validateSequence(s21, 20, 20)
-    if (validation21 != '') {
-      console.log("wrong input...");
-      prob.innerHTML += formatOutput(s21, validation21, 1, seqArray21[i].name, output_type);
-      continue;
-    }
-    var s221 = s21;
-
-
-    // output
-    ////prob.innerHTML += formatOutput(s221, results21, 0, seqArray[i].name, output_type);
-  }
-
-
-  document.write("\nchecked mir");
-
-  for (var i = 0; i < seqArray22.length; i++) {
-
-    var s22 = seqArray22[i].seq.toUpperCase();
-
-    // check the sequence format
-    const validation22 = validateSequence(s22, 50, 50)
-    if (validation21 != '') {
-      console.log("wrong input...");
-      prob.innerHTML += formatOutput(s21, validation22, 1, seqArray22[i].name, output_type);
-      continue;
-    }
-    var s222 = s22;
-  }
-
-  // output
-  ////prob.innerHTML += formatOutput(s222, results22, 0, seqArray[i].name, output_type); 
-
-
-
-  document.write("\nchecked mrna");
-
-  a = new Array(50);
-  for (var i = 0; i < a.length; i++) {
-    a[i] = new Array(20);
-  }
-
-  for (var i = 0; i < a.length; i++) {
-    for (var j = 0; j < 20; j++) {
-      a[i][j] = 1;
-    }
-  }
-  const xs = tf.tensor(a);
-  //document.write(xs);
-
-  //const result = model.predict(a).asScalar().dataSync();
-  ////const result = model.predict(xs).asScalar().dataSync();
-  //document.write(result);
-
-}
-
-async function makePrediction2() {
-
-  // get HTML elements
-  var prob = document.getElementById('prob3');
-  ////prob.innerHTML = '';
-  var txt21 = document.getElementById('text21').value;
-  var txt22 = document.getElementById('text22').value;
-
-  console.log("model loading...");
-
-  // clear the model variable
-  var model2 = undefined;
-  // load model
-  modelUrl2 = "https://raw.githubusercontent.com/Ilektra-Giassa/miRBind01/gh-pages/assets/model.json";
-  model = await tf.loadLayersModel(modelUrl2);
-  console.log("model loaded...");
-
-
-  // parse input text into the array of sequences
-  var seqArray21 = [];
-  var seqArray22 = [];
-
-  if (document.getElementById('fasta').checked) {
-    var fasta = require("biojs-io-fasta");
-    seqArray21 = fasta.parse(txt21);
-    seqArray22 = fasta.parse(txt22);
-  }
-  if (document.getElementById('multiline').checked) {
-    seqArray21 = txt21.split(/\r?\n/).map(simpleSeq);
-    seqArray22 = txt22.split(/\r?\n/).map(simpleSeq);
-  }
-
-
-
-
-  // process the array of sequences
-  for (var i = 0; i < seqArray21.length; i++) {
-
-    var s21 = seqArray21[i].seq.toUpperCase();
-
-    // check the sequence format
-    const validation21 = validateSequence(s21, 20, 20)
-    if (validation != '') {
-      console.log("wrong input miR...");
-      prob.innerHTML += formatOutput(s, validation, 1, seqArray[i].name, output_type);
-      continue;
-    }
-    var s2 = s;
-
-    const Ntries = 100; // number of tries 
-    var results = [];
-    for (j = 0; j < Ntries; j++) {
-
-      // from string to one-hot array
-
-      // inference
-      ////results.push(parseFloat(model.predict(a).asScalar().dataSync()));
-    }
-
-    // output
-    ////prob.innerHTML += formatOutput(s21, results, 0, seqArray[i].name, output_type);
-  }
-
-  for (var i = 0; i < seqArray22.length; i++) {
-
-    var s22 = seqArray22[i].seq.toUpperCase();
-
-    // check the sequence format
-    const validation22 = validateSequence(s22, 50, 50)
-    if (validation != '') {
-      console.log("wrong input mRNA...");
-      prob.innerHTML += formatOutput(s22, validation, 1, seqArray[i].name, output_type);
-      continue;
-    }
-    var s2 = s;
-
-    const Ntries = 100; // number of tries 
-    var results = [];
-    for (j = 0; j < Ntries; j++) {
-
-      // from string to one-hot array
-
-      // inference
-      ////results.push(parseFloat(model.predict(a).asScalar().dataSync()));
-    }
-
-    // output
-    ////prob.innerHTML += formatOutput(s, results, 0, seqArray[i].name, output_type);
-  }
-
-}
-
 
 async function makePrediction1() {
   var txt11 = document.getElementById('text11').value;
@@ -450,17 +269,11 @@ async function makePrediction1() {
     var result = model.predict(y2).asScalar().dataSync();
     console.log("predicting..");
 	prob.innerHTML = "";
-    prob.innerHTML += "<br/><strong>Input</strong><br/>miRNA  " + s11 + "<br/>mRNA  " + s12;
-    prob.innerHTML += "<br/><br/><br/><strong>Prediction</strong><br/>The score of the putative interaction is: " + " <strong>" + result + "</strong>";
+	header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>";
+	result = "<tr><td>" + s11 + "</td><td>" + s12 + "</td><td>" + result + "</td></td></table>";
+	table = header + result;
+    prob.innerHTML += table;
   }
-}
-
-
-function oneHot(s50) {
-  // one-hot encoding
-  const t = s50.replace(/A/g, '7').replace(/T/g, '1').replace(/C/g, '2').replace(/G/g, '3').replace(/N/g, '1')
-  const y = tf.oneHot(tf.tensor1d(t.split(''), 'int32'), 20);
-  return y.reshape([1, 50, 20, 1]);
 }
 
 function loadExample1() {
@@ -470,10 +283,103 @@ function loadExample1() {
   document.getElementsByName("text12")[0].value = mRNAex1;
   var prob = document.getElementById('prob2');
   prob.innerHTML = "";
-  prob.innerHTML += "<br/><strong>Input</strong><br/>miRNA  " + miRex1 + "<br/>mRNA  " + mRNAex1;
-  prob.innerHTML += "<br/><br/><br/><strong>Prediction</strong><br/>The score of the putative interaction is: " + " <strong>0.9977567791938782</strong>";
+  header = "<table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>";
+  result = "<tr><td>" + miRex1 + "</td><td>" + mRNAex1 + "</td><td>" + "0.9977567791938782</td></td></table>";
+  table = header + result;
+  prob.innerHTML += table;
 }
 
+function loadExample2() {
+  miRex1 = "TCCGAGCCTGGGTCTCCCTC";
+  mRNAex1 = "TTCAGGAGAAGCTGAGAGAGACCCAGGAGTATAACCGAATTCAGAAGGAG";
+  miRex2 = "AAAGTGCTTCCCTTTGGACT";
+  mRNAex2 = "CCTGAGGAGACCAAGCTGGGCAAGAGGCAGTGCGACGGCAAGAATGCGCT";
+  document.getElementsByName("text21")[0].value = miRex1 + "\n" + miRex2;
+  document.getElementsByName("text22")[0].value = mRNAex1 + "\n" + mRNAex2;
+  var prob = document.getElementById('prob3');
+  prob.innerHTML = "";
+  header = "<table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>";
+  result = "<tr><td>" + miRex1 + "</td><td>" + mRNAex1 + "</td><td>0.9977567791938782</td></td><tr><td>" + miRex2 + "</td><td>" + mRNAex2 + "</td><td>0.021560560911893845</td></td></table>";
+  table = header + result;
+  prob.innerHTML += table;
+}
+
+
+async function makePrediction2() {
+  var seqArray = [];
+  results = "";
+  var txt21 = document.getElementById('text21').value;
+  var txt22 = document.getElementById('text22').value;
+  var prob = document.getElementById('prob3');
+  prob.innerHTML = '';
+  //if (document.getElementById('fasta').checked) {
+    //console.log("fasta");
+    //var fasta = require("biojs-io-fasta");
+    //seqArray21 = fasta.parse(txt21);
+    //seqArray22 = fasta.parse(txt22);
+  //}
+  //if (document.getElementById('multiline').checked) {
+    seqArray21 = txt21.split(/\r?\n/).map(simpleSeq);
+    seqArray22 = txt22.split(/\r?\n/).map(simpleSeq);
+  //}
+  var equalNumber = true;
+  if (seqArray21.length != seqArray22.length) {
+    prob.innerHTML += "<br/>The number of miRNAs and mRNAs should be equal.<br/>"
+    var equalNumber = false;
+  }
+  var model = undefined;
+  modelUrl = "https://raw.githubusercontent.com/ML-Bioinfo-CEITEC/miRBind/gh-pages/assets/model.json";
+  model = await tf.loadLayersModel(modelUrl);
+  console.log("model loaded...");
+  validated = false;
+  if (equalNumber) {
+    for (var i = 0; i < seqArray21.length; i++) {
+      var s21 = seqArray21[i].seq.toUpperCase();
+      var s22 = seqArray22[i].seq.toUpperCase();
+      const validation21 = validateSequence(s21, 20, 20);
+      const validation22 = validateSequence(s22, 50, 50);
+      if ((validation21 != '') || (validation22 != '')) {
+        if (validation21 != '') {
+          prob.innerHTML += "<br/>" + seqArray21[i].name + " " + s21 + " " + validation21 + "<br/>";
+        } else {
+          prob.innerHTML += "<br/>" + seqArray22[i].name + " " + s22 + " " + validation22 + "<br/>";
+        }
+        continue;
+      }
+      console.log("all validated");
+      input = "";
+      for (var j = 0; j < 1000; j++) {
+        input[j] = new Array(20);
+      }
+      binding = ["AT", "TA", "CG", "GC"];
+      for (var k = 0; k < 50; k++) {
+        for (var l = 0; l < 20; l++) {
+          char = s21.charAt(l) + s22.charAt(k);
+          if (binding.includes(char)) {
+            input += '1';
+          } else {
+            input += '0';
+          }
+        }
+      }
+      console.log("input calc");
+      y1 = tf.tensor1d(input.split(''), 'int32');
+      y2 = y1.reshape([1, 50, 20, 1]);
+      //console.log(y2);
+
+      if ((validation21 == '') & (validation22 == '')) {
+		validated = true;
+        var result = model.predict(y2).asScalar().dataSync();
+        results += "<tr><td>" + s21 + "</td><td>" + s22 + "</td><td>" + result + "</td></tr>";
+      }
+	  header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>"
+    }
+	if (validated) {
+	   table = header + results;
+       prob.innerHTML += table;
+		}
+  }
+}
 	</script>
 		
   </BODY>
