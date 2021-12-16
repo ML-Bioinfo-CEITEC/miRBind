@@ -91,7 +91,7 @@ h1 {
 }
 
 table, th, td {
-  border: 1px solid black;
+  border: 1.5px solid black;
 }
    
 </style>
@@ -262,7 +262,7 @@ async function makePrediction1() {
 
     const y1 = tf.tensor1d(input.split(''), 'int32');
     y2 = y1.reshape([1, 50, 20, 1]);
-    var result = model.predict(y2).asScalar().dataSync();
+    var result = parseFloat(model.predict(y2).asScalar().dataSync());
     console.log("predicting..");
 	prob.innerHTML = "";
 	header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>";
@@ -365,7 +365,7 @@ async function makePrediction2() {
 
       if ((validation21 == '') & (validation22 == '')) {
 		validated = true;
-        var result = model.predict(y2).asScalar().dataSync();
+        var result = parseFloat(model.predict(y2).asScalar().dataSync());
         results += "<tr><td>" + s21 + "</td><td>" + s22 + "</td><td>" + result + "</td></tr>";
       }
 	  header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>"
