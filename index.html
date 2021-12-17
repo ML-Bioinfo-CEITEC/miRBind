@@ -278,7 +278,15 @@ async function makePrediction1() {
     prob.innerHTML = "";
 	appendix = "<br/><br/>Scores highlighted in <span  style='color:green;'>green</span> exceed the sensitive threshold (0.5) of miRBind.<br/> Scores highlighted in <span  style='color:blue;'>blue</span> exceed the precise threshold (0.9) of miRBind."
     header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>";
-    result = "<tr><td>" + s11 + "</td><td>" + s12 + "</td><td>" + result + "</td></td></table>";
+	if (result >=0.9) {
+	  result = "<tr><td>" + s11 + "</td><td>" + s12 + "</td><td style='color:blue;'>" + result + "</td></td></table>";
+	  }
+	else if (result >= 0.5) {
+	  result = "<tr><td>" + s11 + "</td><td>" + s12 + "</td><td style='color:green;'>" + result + "</td></td></table>"; 
+	  }
+	else {
+      result = "<tr><td>" + s11 + "</td><td>" + s12 + "</td><td>" + result + "</td></td></table>";
+	  }
     table = header + result;
     prob.innerHTML += table;
 	prob.innerHTML += appendix;
