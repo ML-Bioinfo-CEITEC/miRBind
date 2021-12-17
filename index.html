@@ -104,7 +104,8 @@ td, th {
 
 tr:nth-child(even) {
   background-color: #dddddd;
-}  
+}
+   
 </style>
 
 
@@ -135,6 +136,8 @@ tr:nth-child(even) {
         <h4><strong>About miRBind</strong></h4>
 		<p>The <strong>miRBind JS</strong> web interface predicts the potential of miRNA:target binding. To use our machine learning method, first choose the size of the input by clicking either on <i><strong>Single pair</strong></i> or on <i><strong>Multiple pairs</strong></i>). For multiple input pairs, you are prompted to select the format of the input (<i><strong>Line separated</strong></i> or <i><strong>Multi-FASTA</strong></i>).</p>
 	<DIV class="prob1" , id="prob1"><p>For more info about miRBind, click <A href="https://github.com/ML-Bioinfo-CEITEC/miRBind" target="_blank">here</A>.</p></DIV><br/>
+	<strong>Appendix</strong><br/>For the interpretation of the miRBind scores:
+	<br/>Scores highlighted in <span  style='color:green;'>green</span> exceed the sensitive threshold (0.5) of miRBind.<br/> Scores highlighted in <span  style='color:blue;'>blue</span> exceed the precise threshold (0.9) of miRBind.
       </FORM>
     </div>
 	
@@ -245,11 +248,11 @@ async function makePrediction1() {
 
   if ((validation11 == '') & (validation12 == '')) {
     var model = undefined;
-	modelUrl = "https://raw.githubusercontent.com/ML-Bioinfo-CEITEC/miRBind/gh-pages/assets/model.json";
-	prob.innerHTML += "Loading the model...";
+    modelUrl = "https://raw.githubusercontent.com/ML-Bioinfo-CEITEC/miRBind/gh-pages/assets/model.json";
+    prob.innerHTML += "Loading the model...";
     model = await tf.loadLayersModel(modelUrl);
-	prob.innerHTML += "Predicting..";
-    console.log("model loaded...");	
+    prob.innerHTML += "Predicting..";
+    console.log("model loaded...");
     char = s11.charAt(1) + s12.charAt(1);
     console.log(char);
     input = "";
@@ -274,14 +277,17 @@ async function makePrediction1() {
     const y1 = tf.tensor1d(input.split(''), 'int32');
     y2 = y1.reshape([1, 50, 20, 1]);
     var result = parseFloat(model.predict(y2).asScalar().dataSync());
-    console.log("predicting..");
-	prob.innerHTML = "";
-	header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>";
-	result = "<tr><td>" + s11 + "</td><td>" + s12 + "</td><td>" + result + "</td></td></table>";
-	table = header + result;
+    result = result.toFixed(4);
+    prob.innerHTML = "";
+	appendix = "<br/><br/>Scores highlighted in <span  style='color:green;'>green</span> exceed the sensitive threshold (0.5) of miRBind.<br/> Scores highlighted in <span  style='color:blue;'>blue</span> exceed the precise threshold (0.9) of miRBind."
+    header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>";
+    result = "<tr><td>" + s11 + "</td><td>" + s12 + "</td><td>" + result + "</td></td></table>";
+    table = header + result;
     prob.innerHTML += table;
+	prob.innerHTML += appendix;
   }
 }
+
 
 function loadExample1() {
   miRex1 = "TCCGAGCCTGGGTCTCCCTC";
@@ -291,9 +297,11 @@ function loadExample1() {
   var prob = document.getElementById('prob2');
   prob.innerHTML = "";
   header = "<table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>";
-  result = "<tr><td>" + miRex1 + "</td><td>" + mRNAex1 + "</td><td>" + "0.9977567791938782</td></td></table>";
+  result = "<tr><td>" + miRex1 + "</td><td>" + mRNAex1 + "</td><td style='color:blue;'>0.9978</td></td></table>";
+  appendix = "<br/><br/>Scores highlighted in <span  style='color:green;'>green</span> exceed the sensitive threshold (0.5) of miRBind.<br/> Scores highlighted in <span  style='color:blue;'>blue</span> exceed the precise threshold (0.9) of miRBind."
   table = header + result;
   prob.innerHTML += table;
+  prob.innerHTML += appendix;
 }
 
 function loadExample2() {
@@ -306,29 +314,32 @@ function loadExample2() {
   var prob = document.getElementById('prob3');
   prob.innerHTML = "";
   header = "<table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>";
-  result = "<tr><td>" + miRex1 + "</td><td>" + mRNAex1 + "</td><td>0.9977567791938782</td></td><tr><td>" + miRex2 + "</td><td>" + mRNAex2 + "</td><td>0.021560560911893845</td></td></table>";
+  result = "<tr><td>" + miRex1 + "</td><td>" + mRNAex1 + "</td><td style='color:blue;'>0.9978</td></td><tr><td>" + miRex2 + "</td><td>" + mRNAex2 + "</td><td>0.0216</td></td></table>";
+  appendix = "<br/><br/>Scores highlighted in <span  style='color:green;'>green</span> exceed the sensitive threshold (0.5) of miRBind.<br/> Scores highlighted in <span  style='color:blue;'>blue</span> exceed the precise threshold (0.9) of miRBind."
   table = header + result;
   prob.innerHTML += table;
+  prob.innerHTML += appendix;
 }
 
 
 async function makePrediction2() {
+  sensitive = 0.5;
+  precise = 0.9;
   var seqArray = [];
   results = "";
   var txt21 = document.getElementById('text21').value;
   var txt22 = document.getElementById('text22').value;
   var prob = document.getElementById('prob3');
   prob.innerHTML = '';
-  prob.innerHTML += 'Checking the input...';
   //if (document.getElementById('fasta').checked) {
-    //console.log("fasta");
-    //var fasta = require("biojs-io-fasta");
-    //seqArray21 = fasta.parse(txt21);
-    //seqArray22 = fasta.parse(txt22);
+  //console.log("fasta");
+  //var fasta = require("biojs-io-fasta");
+  //seqArray21 = fasta.parse(txt21);
+  //seqArray22 = fasta.parse(txt22);
   //}
   //if (document.getElementById('multiline').checked) {
-    seqArray21 = txt21.split(/\r?\n/).map(simpleSeq);
-    seqArray22 = txt22.split(/\r?\n/).map(simpleSeq);
+  seqArray21 = txt21.split(/\r?\n/).map(simpleSeq);
+  seqArray22 = txt22.split(/\r?\n/).map(simpleSeq);
   //}
   var equalNumber = true;
   if (seqArray21.length != seqArray22.length) {
@@ -373,20 +384,29 @@ async function makePrediction2() {
       console.log("input calc");
       y1 = tf.tensor1d(input.split(''), 'int32');
       y2 = y1.reshape([1, 50, 20, 1]);
-      //console.log(y2);
 
       if ((validation21 == '') & (validation22 == '')) {
-		validated = true;
+        validated = true;
         var result = parseFloat(model.predict(y2).asScalar().dataSync());
-        results += "<tr><td>" + s21 + "</td><td>" + s22 + "</td><td>" + result + "</td></tr>";
-      }
-	  header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>"
-    }
-	if (validated) {
-	   prob.innerHTML = '';
-	   table = header + results;
-           prob.innerHTML += table;
+		result = result.toFixed(4);
+		if (result >= 0.9) {
+		  results += "<tr><td>" + s21 + "</td><td>" + s22 + "</td><td style='color:blue;'>" + result + "</td></tr>";
 		}
+		else if (result >= 0.5){
+		  results += "<tr><td>" + s21 + "</td><td>" + s22 + "</td><td style='color:green;'>" + result + "</td></tr>";
+		}
+		else {
+          results += "<tr><td>" + s21 + "</td><td>" + s22 + "</td><td>" + result + "</td></tr>";
+		}
+      }
+      header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>"
+    }
+    if (validated) {
+	  appendix = "<br/><br/>Scores highlighted in <span  style='color:green;'>green</span> exceed the sensitive threshold (0.5) of miRBind.<br/> Scores highlighted in <span  style='color:blue;'>blue</span> exceed the precise threshold (0.9) of miRBind."
+      table = header + results;
+      prob.innerHTML += table;
+	  prob.innerHTML += appendix;
+    }
   }
 }
 	</script>
