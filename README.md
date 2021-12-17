@@ -54,7 +54,7 @@ source venv/bin/activate
 
 ### Web application
 
-....
+https://ml-bioinfo-ceitec.github.io/miRBind/
 
 ### Contact information
 
