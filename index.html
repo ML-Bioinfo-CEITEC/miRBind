@@ -234,16 +234,13 @@ async function makePrediction1() {
   const validation11 = validateSequence(s11, 20, 20)
   if (validation11 != '') {
     console.log("wrong mir");
-    prob.innerHTML += "<br/>Check the format of the miRNA. "
-    prob.innerHTML += validateSequence(s11, 20, 20);
+	prob.innerHTML += "<br/>" + s11 + " " + validation11 + "<br/>";
   }
 
   const validation12 = validateSequence(s12, 50, 50)
   if (validation12 != '') {
     console.log("wrong mrna");
-
-    prob.innerHTML += "<br/>Check the format of the mRNA. "
-    prob.innerHTML += validateSequence(s12, 50, 50);
+	prob.innerHTML += "<br/>" + s12 + " " + validation12 + "<br/>";
   }
 
   if ((validation11 == '') & (validation12 == '')) {
