@@ -319,6 +319,7 @@ async function makePrediction2() {
   var txt22 = document.getElementById('text22').value;
   var prob = document.getElementById('prob3');
   prob.innerHTML = '';
+  prob.innerHTML += 'Checking the input...';
   //if (document.getElementById('fasta').checked) {
     //console.log("fasta");
     //var fasta = require("biojs-io-fasta");
@@ -382,8 +383,9 @@ async function makePrediction2() {
 	  header = "</br><table><tr><th>miRNA sequence</th><th>mRNA sequence</th><th>Score</th></tr>"
     }
 	if (validated) {
+	   prob.innerHTML = '';
 	   table = header + results;
-       prob.innerHTML += table;
+           prob.innerHTML += table;
 		}
   }
 }
