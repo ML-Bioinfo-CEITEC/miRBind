@@ -1,6 +1,6 @@
 # miRBind
 
-miRBind is a machine learning method based on CNN (Convolutional Neural Network). It learns the rules of miRNA:target binding and provides a probability for the potential binding of a pair of given miRNA and target molecule.
+miRBind is a machine learning method based on CNN (Convolutional Neural Network). It learns the rules of miRNA:target binding and provides a probability for the potential binding of a pair of given miRNA and target sequence.
 
 ## Installation
 
