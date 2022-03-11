@@ -4,13 +4,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import f1_score
 from sklearn import metrics
 from tensorflow import keras as K
-
 
 def load_cofold(name):
     f = open(name, 'r')
@@ -28,6 +23,41 @@ def load_cofold(name):
     maximum = max(scores)
     norm = [(val - minimum) / (maximum - minimum) for val in scores]
     return norm, scores
+
+
+def load_rna22(name, pos_count, neg_count):
+    """_summary_
+
+    Args:
+        name (str): path to data file
+        pos_count (int): count of positive examples in original test file
+        neg_count (int): count of negative examples in original test file
+
+    Returns:
+        tuple(np.array, np.array): array of labels and array of normalized score
+    """
+
+    rna22 = pd.read_csv(name, header=None, usecols=[10,11], names=['score', 'label'], sep='\t')
+    # they use p-value so we need to invert in to use it as score
+    rna22['score'] = rna22['score'].apply(lambda x: 1 - x)
+
+    # normalizing to the whole 0-1 interval
+    minimum = min(rna22['score'])
+    maximum = max(rna22['score'])
+    rna22['norm'] = rna22['score'].apply(lambda x: (x - minimum) / (maximum - minimum))
+
+    # we don't have results for all sequences - adding score 0 for missing ones
+    pos = pos_count - rna22['label'].value_counts()[1]
+    neg = neg_count - rna22['label'].value_counts()[0]
+    added_score = []
+    for i in range(pos):
+        added_score.append([0, 1, 0])
+    for i in range(neg):
+        added_score.append([0, 0, 0])
+
+    rna22 = pd.concat([rna22, pd.DataFrame(added_score, columns=['score', 'label', 'norm'])], ignore_index=True)
+
+    return np.array(rna22['label']), np.array(rna22['norm'])
 
 
 def one_hot_encoding(df, tensor_dim=(50, 20, 1)):
@@ -109,6 +139,13 @@ cofold, cofold_orig = load_cofold("../Datasets/test_set_1_" + dataset_ratio + "_
 precision, recall, _ = precision_recall_curve(labels, np.array(cofold))
 print("Cofold auc ", metrics.auc(recall, precision))
 plt.plot(recall, precision, label='Cofold', marker=',', color='#f3b77d')
+
+
+rna22_labels, rna22_probs = load_rna22("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper_rna22.txt", 2000, dataset_ratio*2000)
+precision, recall, _ = precision_recall_curve(rna22_labels, rna22_probs)
+print("RNA22 auc ", metrics.auc(recall, precision))
+plt.plot(recall, precision, label='RNA22', marker=',', color='#388294')
+
 
 prec, sens = seed_pr(df)
 plt.plot(sens, prec, label='Seed', marker='.', color='#de425b')
