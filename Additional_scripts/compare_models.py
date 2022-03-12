@@ -60,6 +60,11 @@ def load_rna22(name, pos_count, neg_count):
     return np.array(rna22['label']), np.array(rna22['norm'])
 
 
+def load_dnabert(dataset_ratio):
+    df = pd.read_csv('dnabert_metrics/dnabert_score_1_' + dataset_ratio + '.tsv', sep='\t')
+    return np.array(df['label']), np.array(df['dnabert'])
+
+
 def one_hot_encoding(df, tensor_dim=(50, 20, 1)):
     # alphabet for watson-crick interactions.
     alphabet = {"AT": 1., "TA": 1., "GC": 1., "CG": 1.}
@@ -141,11 +146,15 @@ print("Cofold auc ", metrics.auc(recall, precision))
 plt.plot(recall, precision, label='Cofold', marker=',', color='#f3b77d')
 
 
-rna22_labels, rna22_probs = load_rna22("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper_rna22.txt", 2000, dataset_ratio*2000)
+rna22_labels, rna22_probs = load_rna22("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper_rna22.txt", 2000, int(dataset_ratio)*2000)
 precision, recall, _ = precision_recall_curve(rna22_labels, rna22_probs)
 print("RNA22 auc ", metrics.auc(recall, precision))
 plt.plot(recall, precision, label='RNA22', marker=',', color='#388294')
 
+dnabert_labels, dnabert_probs = load_dnabert(dataset_ratio)
+precision, recall, _ = precision_recall_curve(dnabert_labels, dnabert_probs)
+print("DNABERT auc ", metrics.auc(recall, precision))
+plt.plot(recall, precision, label='DNABERT', marker=',', color='#6fe065')
 
 prec, sens = seed_pr(df)
 plt.plot(sens, prec, label='Seed', marker='.', color='#de425b')
