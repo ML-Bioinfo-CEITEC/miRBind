@@ -111,58 +111,97 @@ def seed_pr(data):
     return TP / (TP + FP), TP / (TP + FN)
 
 
+# PARAMETERTS - you might want to change these
 dataset_ratio = '1'
+models_params = {
+    'miRBind1': {
+        'color': '#1721a6',
+        'label': 'miRBind1'
+    },
+    'miRBind10': {
+        'color': '#702601',
+        'label': 'miRBind10'
+    },
+    'miRBind100': {
+        'color': '#2ab9cc',
+        'label': 'miRBind100'
+    },
+    'Cofold': {
+        'color': '#8a009a',
+        'label': 'Cofold'
+    },
+    'dnabert': {
+        'color': '#ed0065',
+        'label': 'DNABERT'
+    },
+    'rna22': {
+        'color': '#ff7628',
+        'label': 'RNA22'
+    },
+    'seed': {
+        'color': '#ffa600',
+        'label': 'Seed'
+    },
+}
+models = ['miRBind1', 'dnabert']
+fig_name = 'PR_test_set_1_' + dataset_ratio + '.png'
+# END of parameters
+
+
 df = pd.read_csv("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper.tsv", sep='\t')
 ohe_data = one_hot_encoding(df)
 seq_ohe, labels = ohe_data
 print("Number of samples: ", df.shape[0])
 
-model_1 = K.models.load_model("../Models/model_1_1.h5")
-model_1_predictions = model_1.predict(seq_ohe)
-model_10 = K.models.load_model("../Models/model_1_10.h5")
-model_10_predictions = model_10.predict(seq_ohe)
-model_100 = K.models.load_model("../Models/model_1_100.h5")
-model_100_predictions = model_100.predict(seq_ohe)
-
 plt.figure(figsize=(4, 4), dpi=250)
 
-precision, recall, _ = precision_recall_curve(labels, model_1_predictions)
-print("Model 1:1 auc", metrics.auc(recall, precision))
-plt.plot(recall, precision, label='miRBind1', marker=',', color='#00429d')
+if 'miRBind1' in models:
+    model_1 = K.models.load_model("../Models/model_1_1.h5")
+    model_1_predictions = model_1.predict(seq_ohe)
+    precision, recall, _ = precision_recall_curve(labels, model_1_predictions)
+    print("Model 1:1 auc", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['miRBind1']['label'], marker=',', color=models_params['miRBind1']['color'])
 
-precision, recall, _ = precision_recall_curve(labels, model_10_predictions)
-print("Model 1:10 auc", metrics.auc(recall, precision))
-plt.plot(recall, precision, label='miRBind10', marker=',', color='#73a2c6')
+if 'miRBind10' in models:
+    model_10 = K.models.load_model("../Models/model_1_10.h5")
+    model_10_predictions = model_10.predict(seq_ohe)
+    precision, recall, _ = precision_recall_curve(labels, model_10_predictions)
+    print("Model 1:10 auc", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['miRBind10']['label'], marker=',', color=models_params['miRBind10']['color'])
 
-precision, recall, _ = precision_recall_curve(labels, model_100_predictions)
-print("Model 1:100 auc", metrics.auc(recall, precision))
-plt.plot(recall, precision, label='miRBind100', marker=',', color='#a5d5d8')
+if 'miRBind100' in models:
+    model_100 = K.models.load_model("../Models/model_1_100.h5")
+    model_100_predictions = model_100.predict(seq_ohe)
+    precision, recall, _ = precision_recall_curve(labels, model_100_predictions)
+    print("Model 1:100 auc", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['miRBind100']['label'], marker=',', color=models_params['miRBind100']['color'])
 
+if 'Cofold' in models:
+    cofold, cofold_orig = load_cofold("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper_cofold.fasta")
+    precision, recall, _ = precision_recall_curve(labels, np.array(cofold))
+    print("Cofold auc ", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['Cofold']['label'], marker=',', color=models_params['Cofold']['color'])
 
-cofold, cofold_orig = load_cofold("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper_cofold.fasta")
+if 'rna22' in models:
+    rna22_labels, rna22_probs = load_rna22("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper_rna22.txt", 2000, int(dataset_ratio)*2000)
+    precision, recall, _ = precision_recall_curve(rna22_labels, rna22_probs)
+    print("RNA22 auc ", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['rna22']['label'], marker=',', color=models_params['rna22']['color'])
 
-precision, recall, _ = precision_recall_curve(labels, np.array(cofold))
-print("Cofold auc ", metrics.auc(recall, precision))
-plt.plot(recall, precision, label='Cofold', marker=',', color='#f3b77d')
+if 'dnabert' in models:
+    dnabert_labels, dnabert_probs = load_dnabert(dataset_ratio)
+    precision, recall, _ = precision_recall_curve(dnabert_labels, dnabert_probs)
+    print("DNABERT auc ", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['dnabert']['label'], marker=',', color=models_params['dnabert']['color'])
 
-
-rna22_labels, rna22_probs = load_rna22("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper_rna22.txt", 2000, int(dataset_ratio)*2000)
-precision, recall, _ = precision_recall_curve(rna22_labels, rna22_probs)
-print("RNA22 auc ", metrics.auc(recall, precision))
-plt.plot(recall, precision, label='RNA22', marker=',', color='#388294')
-
-dnabert_labels, dnabert_probs = load_dnabert(dataset_ratio)
-precision, recall, _ = precision_recall_curve(dnabert_labels, dnabert_probs)
-print("DNABERT auc ", metrics.auc(recall, precision))
-plt.plot(recall, precision, label='DNABERT', marker=',', color='#6fe065')
-
-prec, sens = seed_pr(df)
-plt.plot(sens, prec, label='Seed', marker='.', color='#de425b')
-print("Seed sens, prec: ", sens, prec)
+if 'seed' in models:
+    prec, sens = seed_pr(df)
+    plt.plot(sens, prec, label=models_params['seed']['label'], marker='.', color=models_params['seed']['color'])
+    print("Seed sens, prec: ", sens, prec)
 
 plt.legend(loc='best')
 plt.axis([0, 1, 0, 1])
 plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.title('PR curve on 1:' + dataset_ratio + ' test set')
-plt.savefig('PR_test_set_1_' + dataset_ratio + '.png')
+plt.savefig(fig_name)
