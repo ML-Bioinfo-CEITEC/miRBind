@@ -156,21 +156,21 @@ print("Number of samples: ", df.shape[0])
 plt.figure(figsize=(4, 4), dpi=250)
 
 if 'miRBind1' in models:
-    model_1 = K.models.load_model("../Models/model_1_1.h5")
+    model_1 = K.models.load_model("../Models/CNN_model_1_1_optimized.h5")
     model_1_predictions = model_1.predict(seq_ohe)
     precision, recall, _ = precision_recall_curve(labels, model_1_predictions)
     print("Model 1:1 auc", metrics.auc(recall, precision))
     plt.plot(recall, precision, label=models_params['miRBind1']['label'], marker=',', color=models_params['miRBind1']['color'])
 
 if 'miRBind10' in models:
-    model_10 = K.models.load_model("../Models/model_1_10.h5")
+    model_10 = K.models.load_model("../Models/CNN_model_1_10_optimized.h5")
     model_10_predictions = model_10.predict(seq_ohe)
     precision, recall, _ = precision_recall_curve(labels, model_10_predictions)
     print("Model 1:10 auc", metrics.auc(recall, precision))
     plt.plot(recall, precision, label=models_params['miRBind10']['label'], marker=',', color=models_params['miRBind10']['color'])
 
 if 'miRBind100' in models:
-    model_100 = K.models.load_model("../Models/model_1_100.h5")
+    model_100 = K.models.load_model("../Models/CNN_model_1_100_optimized.h5")
     model_100_predictions = model_100.predict(seq_ohe)
     precision, recall, _ = precision_recall_curve(labels, model_100_predictions)
     print("Model 1:100 auc", metrics.auc(recall, precision))
