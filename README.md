@@ -40,7 +40,7 @@ pip install -r requirements.txt
 
 ### Prediction
 
-The default model is trained on human Ago1 CLASH dataset with ratio 1:1 of positive:negative samples.
+The default model is trained on human Ago1 CLASH dataset with ratio 1:10 of positive:negative samples. Required input is a tsv file with multiple potential miRNA - target pairs consisting of first column containing miRNA sequence (20 bp long) and second column containing target sequence (50 bp long).
 To run the model:
 
 ```
