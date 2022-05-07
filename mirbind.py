@@ -4,6 +4,7 @@ import argparse
 import numpy as np
 import pandas as pd
 from tensorflow import keras as k
+import tensorflow_addons as tfa
 
 
 def parse_input():
@@ -15,7 +16,7 @@ def parse_input():
                                                  'binding')
     parser.add_argument('--input', default="example.tsv", metavar='<input_tsv_filename>')
     parser.add_argument('--output', default="example_scores", metavar='<output_filename_prefix>')
-    parser.add_argument('--model', default="Models/model_1_1.h5", metavar='<model_name>')
+    parser.add_argument('--model', default="Models/CNN_model_1_10_optimized.h5", metavar='<model_name>')
     args = parser.parse_args()
     return vars(args)
 
