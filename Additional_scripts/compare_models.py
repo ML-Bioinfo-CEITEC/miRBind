@@ -64,6 +64,10 @@ def load_dnabert(dataset_ratio):
     df = pd.read_csv('dnabert_metrics/dnabert_score_1_' + dataset_ratio + '.tsv', sep='\t')
     return np.array(df['label']), np.array(df['dnabert'])
 
+def load_targetnet(dataset_ratio):
+    df = pd.read_csv('targetnet_metrics/targetnet_score_1_' + dataset_ratio + '.tsv', sep='\t')
+    return np.array(df['label']), np.array(df['prediction'])
+
 
 def one_hot_encoding(df, tensor_dim=(50, 20, 1)):
     # alphabet for watson-crick interactions.
@@ -142,8 +146,12 @@ models_params = {
         'color': '#ffa600',
         'label': 'Seed'
     },
+    'targetnet': {
+        'color': '#ffa600',
+        'label': 'TargetNet'
+    }
 }
-models = ['miRBind1', 'dnabert']
+models = ['dnabert', 'targetnet', 'Cofold', 'rna22']
 fig_name = 'PR_test_set_1_' + dataset_ratio + '.png'
 # END of parameters
 
@@ -198,6 +206,12 @@ if 'seed' in models:
     prec, sens = seed_pr(df)
     plt.plot(sens, prec, label=models_params['seed']['label'], marker='.', color=models_params['seed']['color'])
     print("Seed sens, prec: ", sens, prec)
+
+if 'targetnet' in models:
+    targetnet_labels, targetnet_probs = load_targetnet(dataset_ratio)
+    precision, recall, _ = precision_recall_curve(targetnet_labels, targetnet_probs)
+    print("TargetNet auc ", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['targetnet']['label'], marker=',', color=models_params['targetnet']['color'])
 
 plt.legend(loc='best')
 plt.axis([0, 1, 0, 1])
