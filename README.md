@@ -2,6 +2,10 @@
 
 miRBind is a machine learning method based on CNN (Convolutional Neural Network). It learns the rules of miRNA:target binding and provides a probability for the potential binding of a pair of given miRNA and target sequence.
 
+### Web application
+
+The user-friendly miRBind web application for performing predictions https://ml-bioinfo-ceitec.github.io/miRBind/
+
 ## Installation
 
 Using Git:
@@ -40,7 +44,7 @@ pip install -r requirements.txt
 
 ### Prediction
 
-The default model is trained on human Ago1 CLASH dataset with ratio 1:10 of positive:negative samples. Required input is a tsv file with multiple potential miRNA - target pairs consisting of first column containing miRNA sequence (20 bp long) and second column containing target sequence (50 bp long).
+Required input is a tsv file with multiple potential miRNA - target pairs consisting of first column containing miRNA sequence (20 bp long) and second column containing target sequence (50 bp long).
 To run the model:
 
 ```
@@ -49,12 +53,9 @@ chmod +x mirbind.py
 #if you are not actively sourcing from the previously created virtualenv:
 source venv/bin/activate
 #run the prediction
-./mirbind.py --input <input_file> --output <output_file> --model <path_to_model.h5>
+./mirbind.py --input <input_file> --output <output_file>
 ```
 
-### Web application
-
-The user-friendly miRBind web application for performing predictions https://ml-bioinfo-ceitec.github.io/miRBind/
 
 ### Contact information
 
