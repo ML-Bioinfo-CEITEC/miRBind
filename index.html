@@ -245,7 +245,7 @@ async function makePrediction1() {
 
   if ((validation11 == '') & (validation12 == '')) {
     var model = undefined;
-    modelUrl = "https://raw.githubusercontent.com/ML-Bioinfo-CEITEC/miRBind/gh-pages/assets/model.json";
+    modelUrl = "https://raw.githubusercontent.com/ML-Bioinfo-CEITEC/miRBind/gh-pages/assets_new/model.json";
     prob.innerHTML += "Loading the model...";
     model = await tf.loadLayersModel(modelUrl);
     prob.innerHTML += "Predicting..";
@@ -352,7 +352,7 @@ async function makePrediction2() {
     var equalNumber = false;
   }
   var model = undefined;
-  modelUrl = "https://raw.githubusercontent.com/ML-Bioinfo-CEITEC/miRBind/gh-pages/assets/model.json";
+  modelUrl = "https://raw.githubusercontent.com/ML-Bioinfo-CEITEC/miRBind/gh-pages/assets_new/model.json";
   model = await tf.loadLayersModel(modelUrl);
   console.log("model loaded...");
   validated = false;
