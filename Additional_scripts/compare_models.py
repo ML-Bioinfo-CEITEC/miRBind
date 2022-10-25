@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import precision_recall_curve
 from sklearn import metrics
 from tensorflow import keras as K
+import tensorflow_addons as tfa
 
 def load_cofold(name):
     f = open(name, 'r')
@@ -23,6 +24,14 @@ def load_cofold(name):
     maximum = max(scores)
     norm = [(val - minimum) / (maximum - minimum) for val in scores]
     return norm, scores
+
+
+def load_RNAhybrid(name):
+    df = pd.read_csv(name, sep='\t', header=None, names=['miRNA', 'mRNA', 'score', 'label'])
+    maximum = (-1)*df['score'].min()
+    minimum = (-1)*df['score'].max()
+    df['score'] = df['score'].apply(lambda x: ((-1)*x - minimum)/(maximum - minimum))
+    return np.array(df['label']), np.array(df['score'])
 
 
 def load_rna22(name, pos_count, neg_count):
@@ -63,6 +72,11 @@ def load_rna22(name, pos_count, neg_count):
 def load_dnabert(dataset_ratio):
     df = pd.read_csv('dnabert_metrics/dnabert_score_1_' + dataset_ratio + '.tsv', sep='\t')
     return np.array(df['label']), np.array(df['dnabert'])
+
+
+def load_resnet(dataset_ratio):
+    df = pd.read_csv('resnet_preds/resnet_preds_' + dataset_ratio + '.csv')
+    return np.array(df['labels']), np.array(df['model_pred'])
 
 
 def one_hot_encoding(df, tensor_dim=(50, 20, 1)):
@@ -112,38 +126,46 @@ def seed_pr(data):
 
 
 # PARAMETERTS - you might want to change these
-dataset_ratio = '1'
 models_params = {
-    'miRBind1': {
-        'color': '#1721a6',
-        'label': 'miRBind1'
+    'CNN1': {
+        'color': '#a9d9f0',
+        'label': 'CNN 1:1'
     },
-    'miRBind10': {
-        'color': '#702601',
-        'label': 'miRBind10'
+    'CNN10': {
+        'color': '#5b8ea5',
+        'label': 'CNN 1:10'
     },
-    'miRBind100': {
+    'CNN100': {
         'color': '#2ab9cc',
-        'label': 'miRBind100'
+        'label': 'CNN 1:100'
     },
     'Cofold': {
-        'color': '#8a009a',
+        'color': '#702601',
         'label': 'Cofold'
     },
+    'miRBind': {
+        'color': 'navy',
+        'label': 'miRBind'
+    },
     'dnabert': {
-        'color': '#ed0065',
+        'color': '#ff4181',
         'label': 'DNABERT'
     },
     'rna22': {
-        'color': '#ff7628',
+        'color': '#ffcc00',
         'label': 'RNA22'
     },
     'seed': {
-        'color': '#ffa600',
+        'color': '#ff7628',
         'label': 'Seed'
     },
+    'RNAhybrid': {
+        'color': '#7917a6',
+        'label': 'RNAhybrid'
+    }
 }
-models = ['miRBind1', 'dnabert']
+models = ['miRBind', 'dnabert', 'CNN1', 'rna22', 'Cofold', 'RNAhybrid', 'seed']
+dataset_ratio = '1'
 fig_name = 'PR_test_set_1_' + dataset_ratio + '.png'
 # END of parameters
 
@@ -155,26 +177,26 @@ print("Number of samples: ", df.shape[0])
 
 plt.figure(figsize=(4, 4), dpi=250)
 
-if 'miRBind1' in models:
+if 'CNN1' in models:
     model_1 = K.models.load_model("../Models/CNN_model_1_1_optimized.h5")
     model_1_predictions = model_1.predict(seq_ohe)
     precision, recall, _ = precision_recall_curve(labels, model_1_predictions)
-    print("Model 1:1 auc", metrics.auc(recall, precision))
-    plt.plot(recall, precision, label=models_params['miRBind1']['label'], marker=',', color=models_params['miRBind1']['color'])
+    print("CNN 1:1 auc", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['CNN1']['label'], marker=',', color=models_params['CNN1']['color'])
 
-if 'miRBind10' in models:
+if 'CNN10' in models:
     model_10 = K.models.load_model("../Models/CNN_model_1_10_optimized.h5")
     model_10_predictions = model_10.predict(seq_ohe)
     precision, recall, _ = precision_recall_curve(labels, model_10_predictions)
-    print("Model 1:10 auc", metrics.auc(recall, precision))
-    plt.plot(recall, precision, label=models_params['miRBind10']['label'], marker=',', color=models_params['miRBind10']['color'])
+    print("CNN 1:10 auc", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['CNN10']['label'], marker=',', color=models_params['CNN10']['color'])
 
-if 'miRBind100' in models:
+if 'CNN100' in models:
     model_100 = K.models.load_model("../Models/CNN_model_1_100_optimized.h5")
     model_100_predictions = model_100.predict(seq_ohe)
     precision, recall, _ = precision_recall_curve(labels, model_100_predictions)
-    print("Model 1:100 auc", metrics.auc(recall, precision))
-    plt.plot(recall, precision, label=models_params['miRBind100']['label'], marker=',', color=models_params['miRBind100']['color'])
+    print("CNN 1:100 auc", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['CNN100']['label'], marker=',', color=models_params['CNN100']['color'])
 
 if 'Cofold' in models:
     cofold, cofold_orig = load_cofold("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper_cofold.fasta")
@@ -188,11 +210,23 @@ if 'rna22' in models:
     print("RNA22 auc ", metrics.auc(recall, precision))
     plt.plot(recall, precision, label=models_params['rna22']['label'], marker=',', color=models_params['rna22']['color'])
 
+if 'RNAhybrid' in models:
+    RNA_hybrid_label, RNA_hybrid_score = load_RNAhybrid("../Datasets/test_set_1_" + dataset_ratio + "_CLASH2013_paper_RNAhybrid_scores.txt")
+    precision, recall, _ = precision_recall_curve(RNA_hybrid_label, RNA_hybrid_score)
+    print("RNAhybrid auc ", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['RNAhybrid']['label'], marker=',', color=models_params['RNAhybrid']['color'])
+
 if 'dnabert' in models:
     dnabert_labels, dnabert_probs = load_dnabert(dataset_ratio)
     precision, recall, _ = precision_recall_curve(dnabert_labels, dnabert_probs)
     print("DNABERT auc ", metrics.auc(recall, precision))
     plt.plot(recall, precision, label=models_params['dnabert']['label'], marker=',', color=models_params['dnabert']['color'])
+
+if 'miRBind' in models:
+    resnet_labels, resnet_probs = load_resnet(dataset_ratio)
+    precision, recall, _ = precision_recall_curve(resnet_labels, resnet_probs)
+    print("miRBind auc ", metrics.auc(recall, precision))
+    plt.plot(recall, precision, label=models_params['miRBind']['label'], marker=',', color=models_params['miRBind']['color'])
 
 if 'seed' in models:
     prec, sens = seed_pr(df)
