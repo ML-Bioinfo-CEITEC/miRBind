@@ -2,6 +2,8 @@
 
 miRBind is a machine learning method based on ResNet. It learns the rules of miRNA:target binding and provides a probability for the potential binding of a pair of given miRNA and target sequence.
 
+Have a look at our paper [miRBind: A Deep Learning Method for miRNA Binding Classification](https://www.mdpi.com/2073-4425/13/12/2323) for more information about our work.
+
 ### Web application
 
 The user-friendly miRBind web application for performing predictions https://ml-bioinfo-ceitec.github.io/miRBind/
